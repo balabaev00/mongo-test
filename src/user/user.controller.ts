@@ -16,11 +16,6 @@ export class UserController {
 		return await this.userService.getUsers();
 	}
 
-	@Post()
-	async createUser(@Body() dto: UserCreateDto) {
-		return await this.userService.createUser(dto.email, dto.password, dto.age);
-	}
-
 	@Patch(":userId")
 	async updateUser(@Param("userId") userId: string, @Body() dto: UserUpdateDto) {
 		return this.userService.updateUser(userId, dto);

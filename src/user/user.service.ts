@@ -22,6 +22,15 @@ export class UserService {
 	}
 
 	/**
+	 * It returns a user object from the database, based on the email address passed in
+	 * @param {string} email - string - This is the email of the user we want to find.
+	 * @returns The user object
+	 */
+	async getUserByEmail(email: string) {
+		return await this.userRepository.findOne({email});
+	}
+
+	/**
 	 * It returns a promise that resolves to an array of users
 	 * @returns An array of users
 	 */
