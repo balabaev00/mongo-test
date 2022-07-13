@@ -45,4 +45,13 @@ export class UserRepository {
 	async findOneAndUpdate(userFilterQuery: FilterQuery<User>, user: Partial<User>) {
 		return await this.userModel.findOneAndUpdate(userFilterQuery, user);
 	}
+
+	/**
+	 * This function deletes a user from the database by filtering the user by the userId
+	 * @param userFilterQuery - FilterQuery<User>
+	 * @returns The deleted user
+	 */
+	async deleteUserByUserId(userFilterQuery: FilterQuery<User>) {
+		return await this.userModel.findOneAndDelete(userFilterQuery);
+	}
 }

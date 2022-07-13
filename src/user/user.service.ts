@@ -67,4 +67,8 @@ export class UserService {
 	async updateUser(userId: string, dto: UserUpdateDto) {
 		return await this.userRepository.findOneAndUpdate({userId}, dto);
 	}
+
+	async deleteUser(userId: string) {
+		return await this.userRepository.deleteUserByUserId({userId});
+	}
 }
