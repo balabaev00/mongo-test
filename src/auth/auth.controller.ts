@@ -49,5 +49,30 @@ export class AuthController {
 	}
 
 	@Post(`refresh`)
-	async refreshToken() {}
+	async refreshToken(
+		@Req() request: Request,
+		@Res({passthrough: true}) response: Response
+	) {
+		const {refreshToken} = request.cookies;
+
+		const result = await this.authService.refreshToken(refreshToken);
+
+		if (typeof result === `string`)
+			return {
+				error: true,
+				status: 400,
+				errorMessage: result,
+			};
+
+		response.cookie(`refreshToken`, result.refreshToken, {
+			maxAge: 30 * 24 * 60 * 60 * 1000,
+			httpOnly: true,
+		});
+
+		return {
+			error: false,
+			status: 201,
+			...result,
+		};
+	}
 }

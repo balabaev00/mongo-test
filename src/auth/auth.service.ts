@@ -83,4 +83,31 @@ export class AuthService {
 
 		return token;
 	}
+
+	async refreshToken(refreshToken: string) {
+		if (!refreshToken) return `RefreshToken is null`;
+
+		const result = this.refreshTokenService.validateRefreshToken(refreshToken);
+		const tokenFromDb = await this.refreshTokenService.findRefreshToken(refreshToken);
+
+		if (!tokenFromDb) return `RefreshToken not found`;
+		if (typeof result === `string`) return `An error occurred during verification`;
+
+		const user = await this.userService.getUserByEmail(result.email);
+
+		if (!user) return `User not found`;
+
+		const tokens = await this.refreshTokenService.generateTokens({
+			userId: user.id,
+			email: user.email,
+		});
+
+		await this.refreshTokenService.saveRefreshToken(user.id, tokens.refreshToken);
+		return {
+			...tokens,
+			user: {
+				email: user.email,
+			},
+		};
+	}
 }

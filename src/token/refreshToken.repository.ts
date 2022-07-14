@@ -18,6 +18,10 @@ export class RefreshTokenRepository {
 		return await this.refreshModel.findOne({user: userId});
 	}
 
+	async findOneByRefreshToken(refreshToken: string) {
+		return await this.refreshModel.findOne({refreshToken});
+	}
+
 	/**
 	 * It creates a new refresh token in the database
 	 * @param {string} userId - The user's id

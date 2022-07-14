@@ -65,4 +65,36 @@ export class RefreshTokenService {
 	async removeToken(refreshToken: string) {
 		return await this.refreshTokenRepository.deleteToken(refreshToken);
 	}
+
+	/**
+	 * It takes a refresh token as an argument, verifies it, and returns the result
+	 * @param {string} refreshToken - The refresh token that was sent to the client.
+	 * @returns The decoded payload of the refresh token.
+	 */
+	validateRefreshToken(refreshToken: string) {
+		try {
+			const result = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+			return result;
+		} catch (err) {
+			return null;
+		}
+	}
+
+	/**
+	 * It takes an access token, verifies it, and returns the result
+	 * @param {string} accessToken - The access token to validate.
+	 * @returns The result of the jwt.verify() function.
+	 */
+	validateAccessToken(accessToken: string) {
+		try {
+			const result = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
+			return result;
+		} catch (err) {
+			return null;
+		}
+	}
+
+	async findRefreshToken(refreshToken: string) {
+		return await this.refreshTokenRepository.findOneByRefreshToken(refreshToken);
+	}
 }
