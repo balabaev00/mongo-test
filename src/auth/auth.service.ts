@@ -91,7 +91,8 @@ export class AuthService {
 		const tokenFromDb = await this.refreshTokenService.findRefreshToken(refreshToken);
 
 		if (!tokenFromDb) return `RefreshToken not found`;
-		if (typeof result === `string`) return `An error occurred during verification`;
+		if (typeof result === `string` || !result)
+			return `An error occurred during verification`;
 
 		const user = await this.userService.getUserByEmail(result.email);
 

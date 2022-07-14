@@ -1,4 +1,6 @@
-import {Module} from "@nestjs/common";
+import {RefreshTokenModule} from "src/token/refreshToken.module";
+import {AuthMiddleware} from "./../auth/middlewares/auth.middleware";
+import {MiddlewareConsumer, Module, RequestMethod} from "@nestjs/common";
 import {ConfigModule} from "@nestjs/config";
 import {MongooseModule} from "@nestjs/mongoose";
 import {env} from "process";
@@ -13,8 +15,16 @@ import {UserModule} from "../user/user.module";
 		),
 		AuthModule,
 		UserModule,
+		RefreshTokenModule,
 	],
 	controllers: [],
 	providers: [],
 })
-export class AppModule {}
+export class AppModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(AuthMiddleware).forRoutes({
+			path: "*",
+			method: RequestMethod.ALL,
+		});
+	}
+}
