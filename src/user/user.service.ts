@@ -1,6 +1,6 @@
 import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
-import {v4 as uuidv4} from "uuid";
 import {UserUpdateDto} from "./dto/user.dto";
+import * as crypto from "crypto";
 import * as bcrypt from "bcrypt";
 
 import {UserRepository} from "./user.repository";
@@ -47,10 +47,10 @@ export class UserService {
 	 */
 	async createUser(email: string, password: string, age: number) {
 		const oldUser = await this.userRepository.findOne({email});
-		if (oldUser) return new HttpException(`Email is busy`, HttpStatus.BAD_REQUEST);
+		if (oldUser) return `Email is busy`;
 
 		return await this.userRepository.create({
-			id: uuidv4(),
+			id: crypto.randomBytes(16).toString("hex"),
 			email,
 			password: bcrypt.hashSync(password, process.env.SALT),
 			age,
@@ -68,6 +68,11 @@ export class UserService {
 		return await this.userRepository.findOneAndUpdate({userId}, dto);
 	}
 
+	/**
+	 * It deletes a user from the database by userId
+	 * @param {string} userId - The userId of the user to be deleted.
+	 * @returns The user object that was deleted.
+	 */
 	async deleteUser(userId: string) {
 		return await this.userRepository.deleteUserByUserId({userId});
 	}

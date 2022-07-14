@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
-import {FilterQuery, Model} from "mongoose";
+import mongoose, {FilterQuery, Model, Types} from "mongoose";
 import {RefreshToken, RefreshTokenDocument} from "./schemas/refreshToken.schema";
 
 @Injectable()
@@ -10,12 +10,12 @@ export class RefreshTokenRepository {
 	) {}
 
 	/**
-	 * Find one refresh token document that matches the given filter query
-	 * @param refreshTokenFilterQuery - FilterQuery<RefreshToken>
-	 * @returns The refresh token document that matches the filter query.
+	 * It finds a single record in the database that matches the userId passed in
+	 * @param {string} userId - The user's ID.
+	 * @returns A refresh token record.
 	 */
-	async findOne(refreshTokenFilterQuery: FilterQuery<RefreshToken>) {
-		return await this.refreshModel.findOne(refreshTokenFilterQuery);
+	async findOne(userId: string) {
+		return await this.refreshModel.findOne({user: userId});
 	}
 
 	/**
