@@ -50,7 +50,7 @@ export class UserService {
 		if (oldUser) return `Email is busy`;
 
 		return await this.userRepository.create({
-			id: crypto.randomBytes(16).toString("hex"),
+			id: crypto.randomBytes(12).toString("hex"),
 			email,
 			password: bcrypt.hashSync(password, process.env.SALT),
 			age,

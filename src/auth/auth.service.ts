@@ -20,8 +20,7 @@ export class AuthService {
 	async signUpLocal(dto: AuthDto) {
 		const user = await this.userService.createUser(dto.email, dto.password, dto.age);
 
-		if (user === `Email is busy`)
-			return new HttpException(user, HttpStatus.BAD_REQUEST);
+		if (user === `Email is busy`) return user;
 
 		const tokens = await this.refreshTokenService.generateTokens({
 			userId: user.id,
@@ -37,6 +36,19 @@ export class AuthService {
 		};
 	}
 
+	/**
+	 * It takes a loginDto, gets the user by email, checks if the password matches, generates tokens,
+	 * saves the refresh token, and returns the tokens and user
+	 * @param {LoginDto} dto - LoginDto - this is the data transfer object that we will use to pass the
+	 * email and password to the server.
+	 * @returns {
+	 * 		accessToken: string;
+	 * 		refreshToken: string;
+	 * 		user: {
+	 * 			email: string;
+	 * 		};
+	 * 	}
+	 */
 	async signInLocal(dto: LoginDto) {
 		const user = await this.userService.getUserByEmail(dto.email);
 
@@ -47,8 +59,28 @@ export class AuthService {
 		if (!isPasswordMatching)
 			return new HttpException(`Password is wrong`, HttpStatus.BAD_REQUEST);
 
-		// return {
-		// 	token: await this.getToken(user.id, user.email),
-		// };
+		const tokens = await this.refreshTokenService.generateTokens({
+			userId: user.id,
+			email: user.email,
+		});
+
+		await this.refreshTokenService.saveRefreshToken(user.id, tokens.refreshToken);
+		return {
+			...tokens,
+			user: {
+				email: user.email,
+			},
+		};
+	}
+
+	/**
+	 * It removes the refresh token from the database
+	 * @param {string} refreshToken - The refresh token that was sent to the client.
+	 * @returns The token is being returned.
+	 */
+	async logout(refreshToken: string) {
+		const token = await this.refreshTokenService.removeToken(refreshToken);
+
+		return token;
 	}
 }

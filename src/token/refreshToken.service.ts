@@ -52,11 +52,17 @@ export class RefreshTokenService {
 		const user = await this.userService.getUserById(userId);
 		if (!user) return new HttpException(`User not found`, HttpStatus.BAD_REQUEST);
 
-		const token = await this.refreshTokenRepository.create({
-			user,
-			refreshToken,
-		});
+		const token = await this.refreshTokenRepository.create(userId, refreshToken);
 
 		return token;
+	}
+
+	/**
+	 * It deletes a refresh token from the database
+	 * @param {string} refreshToken - The refresh token that was sent to the client.
+	 * @returns The refresh token is being deleted from the database.
+	 */
+	async removeToken(refreshToken: string) {
+		return await this.refreshTokenRepository.deleteToken(refreshToken);
 	}
 }
